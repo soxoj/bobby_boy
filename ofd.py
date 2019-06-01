@@ -52,7 +52,7 @@ class OFDProvider:
     raw_time = None
 
     # регулярное выражение для проверки соответствия формату текста QR
-    ofd_type1_match_regexp = "t=([\dT]+)&s=([\d\.]+)&fn=(\d+)&i=(\d+)&fp=(\d+)&n=(\d+)"
+    ofd_type1_match_regexp = r"t=([\dT]+)&s=([\d\.]+)&fn=(\d+)&i=(\d+)&fp=(\d+)&n=(\d+)"
 
     def __init__(self, resend):
         self.resend = resend
@@ -217,23 +217,22 @@ class Taxcom(OFDProvider):
     def get_items(self):
         if self.receipt_data:
             soup = BeautifulSoup(self.receipt_data, "lxml")
-            rows = soup.select("td.position")[:-1]
-            price_counts = soup.select("tr.result")
+            rows = soup.select('td.receipt-body div.item')
             self.total_sum = 0
 
             def extract_count(row_obj):
-                return row_obj.find_all('span')[0].get_text().encode("utf-8")
+                return row_obj.select('td.receipt-col1')[0].select('span.value')[0].get_text().encode("utf-8")
 
             def extract_price(row_obj):
-                return row_obj.find_all('span')[1].get_text().encode("utf-8")
+                return row_obj.select('td.receipt-col1')[0].select('span.value')[1].get_text().encode("utf-8")
 
             items = []
             for i, row in enumerate(rows):
 
-                name = row.get_text().encode("utf-8")
+                name = row.select('table.receipt-row-1')[0].select('tr')[0].get_text().encode("utf-8").strip()
 
-                price = float(extract_price(price_counts[i]).replace(',', '.'))
-                count = float(extract_count(price_counts[i]).replace(',', '.'))
+                price = float(extract_price(rows[i]).replace(',', '.'))
+                count = float(extract_count(rows[i]).replace(',', '.'))
                 summa = price * count
                 self.total_sum += summa
                 if count != 1:

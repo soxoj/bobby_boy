@@ -14,8 +14,11 @@ class TestOFDTaxcom(unittest.TestCase):
     def setUpClass(cls):
         """ Setup """
         config.debug = False
-        cls.OFD = ofd.OFDProvider(True).detect(
+        cls.OFD = ofd.OFDProvider(resend=True).detect(
             "t=20170712T133051&s=32.50&fn=8710000100924702&i=1666&fp=3502055476&n=1")
+
+    def test_class_ofd(self):
+        self.assertEqual(self.OFD.__class__, ofd.Taxcom)
 
     def test_search(self):
         self.assertIsNotNone(self.OFD)

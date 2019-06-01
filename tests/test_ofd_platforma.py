@@ -5,7 +5,7 @@ import ofd
 import config
 
 
-class TestOFDTaxcom(unittest.TestCase):
+class TestOFDPlatforma(unittest.TestCase):
 
     """ E2E unittest OFD-interactions """
     OFD = None
@@ -14,7 +14,7 @@ class TestOFDTaxcom(unittest.TestCase):
     def setUpClass(cls):
         """ Setup """
         config.debug = False
-        cls.OFD = ofd.OFDProvider(True).detect(
+        cls.OFD = ofd.OFDProvider(resend=True).detect(
             "t=20170714T1311&s=35.00&fn=8710000100837497&i=231&fp=2921685295&n=1")
 
     def test_search(self):
